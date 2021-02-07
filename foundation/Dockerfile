@@ -4,8 +4,8 @@ RUN \
 apt-get update -y && \
 apt-get install unzip -y && \
 apt-get install wget -y && \
-apt-get install vim -y \
-apt-get -y install git
+apt-get install vim -y && \
+apt-get install -y git
 
 ################################
 # Install Terraform
