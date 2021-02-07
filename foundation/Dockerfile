@@ -8,6 +8,17 @@ apt-get install vim -y && \
 apt-get install -y git
 
 ################################
+# Setup SSH
+################################
+ARG SSH_PRIVATE_KEY
+ARG SSH_PUBLIC_KEY
+RUN mkdir -p /.ssh 
+RUN echo "${SSH_PRIVATE_KEY}" > /.ssh/id_rsa
+RUN echo "${SSH_PUBLIC_KEY}" > /.ssh/id_rsa.pub
+RUN ssh-keyscan github.com > /.ssh/known_hosts
+
+
+################################
 # Install Terraform
 ################################
 RUN wget https://releases.hashicorp.com/terraform/0.14.5/terraform_0.14.5_linux_amd64.zip
