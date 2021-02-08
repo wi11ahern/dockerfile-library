@@ -12,11 +12,12 @@ apt-get install -y git
 ################################
 ARG SSH_PRIVATE_KEY
 ARG SSH_PUBLIC_KEY
-RUN mkdir -p /.ssh 
-RUN echo "${SSH_PRIVATE_KEY}" > /.ssh/id_rsa
-RUN echo "${SSH_PUBLIC_KEY}" > /.ssh/id_rsa.pub
-RUN ssh-keyscan github.com > /.ssh/known_hosts
-
+RUN mkdir -p /root/.ssh/
+RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
+RUN echo "${SSH_PUBLIC_KEY}" > /root/.ssh/id_rsa.pub
+RUN chmod 600 /root/.ssh/id_rsa
+RUN chmod 600 /root/.ssh/id_rsa.pub
+RUN ssh-keyscan github.com > /root/.ssh/known_hosts
 
 ################################
 # Install Terraform
