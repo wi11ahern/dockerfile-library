@@ -6,7 +6,8 @@ apt-get install unzip -y && \
 apt-get install wget -y && \
 apt-get install vim -y && \
 apt-get install curl -y && \
-apt-get install -y git
+apt-get install git -y && \
+apt-get install mandoc -y 
 
 ################################
 # Setup SSH
@@ -51,3 +52,10 @@ RUN pip --version
 RUN pip install awscli --upgrade --user
 ENV PATH=~/.local/bin:$PATH
 RUN mkdir ~/.aws && touch ~/.aws/credentials
+
+################################
+# Setup .bashrc
+################################
+RUN echo 'alias tg="/usr/local/bin/terragrunt"' >> ~/.bashrc
+RUN echo 'alias tf="/usr/local/bin/terraform"' >> ~/.bashrc
+RUN echo 'alias gs="git status"' >> ~/.bashrc
