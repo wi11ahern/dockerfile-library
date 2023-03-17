@@ -54,8 +54,18 @@ ENV PATH=~/.local/bin:$PATH
 RUN mkdir ~/.aws && touch ~/.aws/credentials
 
 ################################
-# Setup .bashrc
+# Setup ZSH
 ################################
-RUN echo 'alias tg="/usr/local/bin/terragrunt"' >> ~/.bashrc
-RUN echo 'alias tf="/usr/local/bin/terraform"' >> ~/.bashrc
-RUN echo 'alias gs="git status"' >> ~/.bashrc
+# https://github.com/deluan/zsh-in-docker
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+-p "https://github.com/zsh-users/zsh-autosuggestions" -p "history-substring-search" \
+-a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
+-a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
+
+RUN echo 'alias tg="/usr/local/bin/terragrunt"' >> ~/.zshrc
+RUN echo 'alias tf="/usr/local/bin/terraform"' >> ~/.zshrc
+
+# Switch default shell to ZSH
+RUN chsh -s ~/.zshrc
+
+CMD [ "zsh" ]
