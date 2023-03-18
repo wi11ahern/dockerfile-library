@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  job1:
+  Identify-Dockerfiles-to-Build:
     runs-on: ubuntu-latest
     outputs:
       changed_dirs: ${{ steps.get_changed_dirs.outputs.changed_dirs }}
@@ -26,8 +26,8 @@ jobs:
         done <<< "$(git diff --name-only HEAD^ HEAD)"
         echo "::set-output name=changed_dirs::${CHANGED_DIRS[*]}"
     
-  job2:
-    needs: job1
+  Docker-Build-and-Push:
+    needs: Identify-Dockerfiles-to-Build
     runs-on: ubuntu-latest
     steps:
     - name: Deploy all buildable directories
@@ -36,6 +36,6 @@ jobs:
         CHANGED_DIRS="${{ needs.job1.outputs.changed_dirs }}"
         for item in "${DEPLOYABLE_DIRS[@]}"; do
           if [[ " ${CHANGED_DIRS[@]} " =~ " ${item} " ]]; then
-            echo "It's deployable"
+            docker build -t ${item} ./${item}/Dockerfile
           fi
         done
