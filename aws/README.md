@@ -13,6 +13,7 @@ Used for managing AWS infrastructure with Terragrunt and Terraform.
 - vim
 - curl
 - git
+- oh-my-zsh
 
 ## Bash Aliases
 - `tg` -- Executes Terragrunt binary.
