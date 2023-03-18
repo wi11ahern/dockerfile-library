@@ -1,6 +1,7 @@
 # AWS
 ## Overview
-Used for managing AWS infrastructure with Terragrunt and Terraform.
+Used for managing AWS infrastructure with Terragrunt and Terraform. Also sets ZSH as the default shell
+for an improved terminal experience.
 
 ## Installs
 - Terraform v1.3.0
