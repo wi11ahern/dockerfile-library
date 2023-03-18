@@ -1,0 +1,41 @@
+name: Dockerfile-Library-Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    outputs:
+      changed_dirs: ${{ steps.get_changed_dirs.outputs.changed_dirs }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    - name: Get changed directories
+      id: get_changed_dirs
+      run: |
+        CHANGED_DIRS=()
+        while IFS= read -r line; do
+          DIR=$(dirname "$line")
+          if ! [[ "${CHANGED_DIRS[@]}" =~ "${DIR}" ]]; then
+            CHANGED_DIRS+=("${DIR}")
+          fi
+        done <<< "$(git diff --name-only HEAD^ HEAD)"
+        echo "::set-output name=changed_dirs::${CHANGED_DIRS[*]}"
+    
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy all buildable directories
+      run: |
+        DEPLOYABLE_DIRS=("aws")
+        CHANGED_DIRS="${{ needs.job1.outputs.changed_dirs }}"
+        for item in "${DEPLOYABLE_DIRS[@]}"; do
+          if [[ " ${CHANGED_DIRS[@]} " =~ " ${item} " ]]; then
+            echo "It's deployable"
+          fi
+        done
