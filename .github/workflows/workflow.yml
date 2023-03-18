@@ -5,37 +5,53 @@ on:
     branches: [ main ]
 
 jobs:
-  Identify-Dockerfiles-to-Build:
+  Identify_Dockerfiles_to_Build:
     runs-on: ubuntu-latest
     outputs:
       changed_dirs: ${{ steps.get_changed_dirs.outputs.changed_dirs }}
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v3
       with:
         fetch-depth: 2
-    - name: Get changed directories
+    - name: Identify Dockerfile Directories with Changes
       id: get_changed_dirs
       run: |
         CHANGED_DIRS=()
         while IFS= read -r line; do
           DIR=$(dirname "$line")
           if ! [[ "${CHANGED_DIRS[@]}" =~ "${DIR}" ]]; then
+            ls -l
             CHANGED_DIRS+=("${DIR}")
           fi
         done <<< "$(git diff --name-only HEAD^ HEAD)"
         echo "::set-output name=changed_dirs::${CHANGED_DIRS[*]}"
     
-  Docker-Build-and-Push:
-    needs: Identify-Dockerfiles-to-Build
+  Docker_Build_and_Push:
+    needs: Identify_Dockerfiles_to_Build
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy all buildable directories
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    -
+      name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Build & Push Images
+      env:
+          DOCKER_REGISTRY: willahern
+          IMAGE_TAG: ${{ github.sha }}
       run: |
         DEPLOYABLE_DIRS=("aws")
-        CHANGED_DIRS="${{ needs.job1.outputs.changed_dirs }}"
+        IFS=' ' read -r -a CHANGED_DIRS <<< "${{ needs.Identify_Dockerfiles_to_Build.outputs.changed_dirs }}"
         for item in "${DEPLOYABLE_DIRS[@]}"; do
           if [[ " ${CHANGED_DIRS[@]} " =~ " ${item} " ]]; then
-            docker build -t ${item} ./${item}/Dockerfile
+            docker build -t ${DOCKER_REGISTRY}/${item}:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/${item}:latest ./${item}/
+            docker push ${DOCKER_REGISTRY}/${item}:$IMAGE_TAG
+            docker push ${DOCKER_REGISTRY}/${item}:latest
           fi
         done
