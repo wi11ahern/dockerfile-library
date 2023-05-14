@@ -7,7 +7,7 @@ for an improved terminal experience.
 - Terraform v1.3.0
 - Terragrunt v0.40.0
 - Python 3.X
-- AWS CLI
+- AWS CLI v2
 - mandoc
 - unzip
 - wget

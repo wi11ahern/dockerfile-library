@@ -9,6 +9,12 @@ apt-get install curl -y && \
 apt-get install git -y && \
 apt-get install mandoc -y 
 
+# Set the HOME environment variable
+ENV HOME /home
+
+# Set the working directory to the HOME directory
+WORKDIR $HOME
+
 ################################
 # Setup SSH
 ################################
@@ -49,9 +55,9 @@ RUN pip --version
 ################################
 # Install AWS CLI
 ################################
-RUN pip install awscli --upgrade --user
-ENV PATH=~/.local/bin:$PATH
-RUN mkdir ~/.aws && touch ~/.aws/credentials
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
 
 ################################
 # Setup ZSH
